@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, text, timestamp, decimal, pgEnum, integer, boolean } from "drizzle-orm/pg-core";
 
-export const doctorInvolvementEnum = pgEnum("doctor_involvement", ["YES", "NO", "PARTIAL"]);
+export const doctorInvolvementEnum = pgEnum("doctor_involvement", ["YES", "NO", "PARTIAL"]); // partial is for just showing name on slip
 export const dayEnum = pgEnum("day_of_week", [
   "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"
 ]);
@@ -31,6 +31,7 @@ export const serviceTypes = pgTable("service_types", {
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+// TODO: For service Type try adding icon attribute as well
 
 export const services = pgTable("services", {
   id: uuid("id").primaryKey().defaultRandom(),

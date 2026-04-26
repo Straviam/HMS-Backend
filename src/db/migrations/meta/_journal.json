@@ -15,6 +15,13 @@
       "when": 1777201784430,
       "tag": "0001_loose_moondragon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777203761169,
+      "tag": "0002_flashy_princess_powerful",
+      "breakpoints": true
     }
   ]
 }
