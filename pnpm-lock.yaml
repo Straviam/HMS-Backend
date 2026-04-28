@@ -7,6 +7,9 @@ settings:
 importers:
   .:
     dependencies:
+      bcryptjs:
+        specifier: ^3.0.3
+        version: 3.0.3
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
@@ -41,6 +44,9 @@ importers:
       "@types/express":
         specifier: ^5.0.6
         version: 5.0.6
+      "@types/jsonwebtoken":
+        specifier: ^9.0.10
+        version: 9.0.10
       "@types/node":
         specifier: ^25.6.0
         version: 25.6.0
@@ -913,6 +919,18 @@ packages:
         integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==,
       }
 
+  "@types/jsonwebtoken@9.0.10":
+    resolution:
+      {
+        integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==,
+      }
+
+  "@types/ms@2.1.0":
+    resolution:
+      {
+        integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==,
+      }
+
   "@types/node@25.6.0":
     resolution:
       {
@@ -1073,6 +1091,13 @@ packages:
         integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==,
       }
     engines: { node: 18 || 20 || >=22 }
+
+  bcryptjs@3.0.3:
+    resolution:
+      {
+        integrity: sha512-GlF5wPWnSa/X5LKM1o0wz0suXIINz1iHRLvTS+sLyi7XPbe5ycmYI3DlZqVGZZtDgl4DmasFg7gOB3JYbphV5g==,
+      }
+    hasBin: true
 
   body-parser@2.2.2:
     resolution:
@@ -2639,6 +2664,13 @@ snapshots:
 
   "@types/json-schema@7.0.15": {}
 
+  "@types/jsonwebtoken@9.0.10":
+    dependencies:
+      "@types/ms": 2.1.0
+      "@types/node": 25.6.0
+
+  "@types/ms@2.1.0": {}
+
   "@types/node@25.6.0":
     dependencies:
       undici-types: 7.19.2
@@ -2772,6 +2804,8 @@ snapshots:
       uri-js: 4.4.1
 
   balanced-match@4.0.4: {}
+
+  bcryptjs@3.0.3: {}
 
   body-parser@2.2.2:
     dependencies:

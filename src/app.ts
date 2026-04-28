@@ -23,7 +23,6 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
-
 app.use("/api/v1/users", userRouter);
 
 app.get("/healthz", async (_: Request, res: Response) => {
@@ -39,6 +38,6 @@ app.get("/healthz", async (_: Request, res: Response) => {
   return res.status(200).json(healthData);
 });
 
-app.use(errorHandler)
+app.use(errorHandler);
 
 export default app;

@@ -8,7 +8,7 @@ import {
 const userRouter: Router = Router();
 
 userRouter.post("/registerUser", registerUser);
-userRouter.post("/login", loginUser);
-userRouter.post("/logout", logoutUser);
+userRouter.get("/login", loginUser);
+userRouter.get("/logout", logoutUser);
 
 export default userRouter;

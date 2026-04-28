@@ -3,8 +3,12 @@ import { db } from "../db/db.js";
 import ApiError from "../utils/api-error.js";
 import { users } from "../db/schema/patients-and-users.js";
 import { eq } from "drizzle-orm";
-import type { safeUser } from "../types/types.js";
+import type { safeUser, UserLoginResponse } from "../types/types.js";
 import ApiResponse from "../utils/api-response.js";
+import { compare, hash } from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+const SECRET = process.env.SECRET as string;
 
 export const registerUser = async (
   req: Request,
@@ -28,12 +32,14 @@ export const registerUser = async (
       );
     }
 
+    // hash the password
+    const hashPassword = await hash(password, 12);
     const [newUser] = await db
       .insert(users)
       .values({
         email,
         userName: fullName,
-        passwordHash: password, // TODO: will hash this later
+        passwordHash: hashPassword,
         role,
       })
       .returning();
@@ -62,16 +68,71 @@ export const loginUser = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+) => {
   try {
-  } catch (err: unknown) {}
+    const { email, password } = req.body;
+    const [foundUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+
+    if (!foundUser) {
+      return next(new ApiError(400, "INVALID", "email or password incorrect"));
+    }
+
+    const isMatched = await compare(password, foundUser.passwordHash);
+    if (!isMatched) {
+      return next(new ApiError(400, "INVALID", "email or password incorrect"));
+    }
+
+    const accessToken = jwt.sign(
+      {
+        data: {
+          userId: foundUser.id,
+          role: foundUser.role,
+        },
+      },
+      SECRET,
+      { expiresIn: "12h" },
+    );
+
+    const loginResponse = {
+      userName: foundUser.userName,
+      email: foundUser.email,
+      role: foundUser.role,
+      accessToken: accessToken,
+    };
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .json(
+        new ApiResponse<UserLoginResponse>(
+          200,
+          loginResponse,
+          "User logged in successfully",
+        ),
+      );
+  } catch (error) {
+    return next(error);
+  }
 };
 
 export const logoutUser = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+) => {
   try {
-  } catch (err: unknown) {}
+  } catch (error) {
+    return next(error);
+  }
 };
+
+// TODO: Robust Error handling
+// TODO: schema validation
