@@ -36,6 +36,20 @@
       "when": 1777209419438,
       "tag": "0004_mysterious_cassandra_nova",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1777555825749,
+      "tag": "0005_talented_firebird",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1777562879572,
+      "tag": "0006_smiling_toro",
+      "breakpoints": true
     }
   ]
 }

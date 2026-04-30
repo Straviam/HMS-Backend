@@ -11,7 +11,7 @@ import { errorHandler } from "./middlewares/error.middleware.js";
 import userRouter from "./routes/user.router.js";
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "*"],
+  origin: ["http://localhost:5173", "*"],
   methods: ["Get", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // for cookies

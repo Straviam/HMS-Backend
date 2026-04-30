@@ -8,6 +8,7 @@ import {
   pgEnum,
   integer,
   boolean,
+  time,
 } from "drizzle-orm/pg-core";
 
 export const doctorInvolvementEnum = pgEnum("doctor_involvement", [
@@ -28,6 +29,7 @@ export const dayEnum = pgEnum("day_of_week", [
 export const doctors = pgTable("doctors", {
   id: uuid("id").primaryKey().defaultRandom(),
   specialization: varchar("specialization", { length: 100 }),
+  doctorName: varchar("doctor_name", { length: 100 }),
   isAvailable: boolean("is_available").default(true),
 });
 
@@ -37,10 +39,11 @@ export const doctorTimings = pgTable("doctor_timings", {
     .references(() => doctors.id)
     .notNull(),
   day: dayEnum("day").notNull(),
-  startTime: varchar("start_time", { length: 10 }).notNull(), // not date and time just "09:00"
-  endTime: varchar("end_time", { length: 10 }).notNull(),
+  startTime: time("start_time").notNull(),
+  endTime: time("end_time").notNull(),
   avgConsultationTime: integer("avg_consultation_time").default(15), // in minutes
   maxTokens: integer("max_tokens").default(20),
+  consultationFee: decimal("consultation_fee", { precision: 10, scale: 2 }).notNull(),
   isActive: boolean("is_active").default(true),
 });
 
@@ -64,3 +67,6 @@ export const services = pgTable("services", {
   serviceName: varchar("service_name", { length: 255 }).notNull(), // e.g., "Chest X-Ray", "Blood Sugar"
   basePrice: decimal("base_price", { precision: 10, scale: 2 }).notNull(),
 });
+
+
+// TODO: Add the specialization in a seperate table and also attached this to is_doctor_involve in some way

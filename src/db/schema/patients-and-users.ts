@@ -12,7 +12,7 @@ export const roleEnum = pgEnum("user_role", [
   "DOCTOR",
   "RECEPTIONIST",
   "OPD_OPERATOR",
-  "MANAGMENT",
+  "MANAGEMENT",
   "ACCOUNTANT",
 ]);
 export const genderEnum = pgEnum("gender", ["MALE", "FEMALE", "OTHER"]);
