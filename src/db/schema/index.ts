@@ -3,7 +3,7 @@ import { relations } from "drizzle-orm";
 
 export * from "./test-user.js";
 export * from "./patients-and-users.js";
-export * from "./doctor-and-service.js"
+export * from "./doctor-and-service.js";
 
 export const doctorsRelations = relations(doctors, ({ many }) => ({
   timings: many(doctorTimings),

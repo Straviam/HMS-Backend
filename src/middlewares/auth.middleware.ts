@@ -8,11 +8,7 @@ import type { AuthRequest, CustomJwtPayload } from "../types/types.js";
 
 const SECRET = process.env.SECRET as string;
 
-const verifyJwt = async (
-  req: AuthRequest,
-  _: Response,
-  next: NextFunction,
-) => {
+const verifyJwt = async (req: AuthRequest, _: Response, next: NextFunction) => {
   try {
     const authHeader = req.header("Authorization");
     const token =
@@ -25,7 +21,7 @@ const verifyJwt = async (
     }
 
     const decodedToken = jwt.verify(token, SECRET) as CustomJwtPayload;
-    console.log(token)
+    console.log(token);
     console.log(decodedToken);
 
     if (!decodedToken?.data.userId) {
@@ -49,7 +45,7 @@ const verifyJwt = async (
 
     next();
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return next(new ApiError(401, "UNAUTHORIZED", "invalid or expire token"));
   }
 };

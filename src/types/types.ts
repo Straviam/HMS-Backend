@@ -15,7 +15,7 @@ export interface CustomJwtPayload extends jwt.JwtPayload {
   data: {
     userId: string;
     role: string;
-  }
+  };
 }
 
 export interface AuthRequest extends Request {

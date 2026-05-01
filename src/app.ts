@@ -9,6 +9,7 @@ import { db } from "./db/db.js";
 import { testUsersTable } from "./db/schema/test-user.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 import userRouter from "./routes/user.router.js";
+import doctorRouter from "./routes/doctor.route.js";
 
 const corsOptions = {
   origin: ["http://localhost:5173", "*"],
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/doctors", doctorRouter);
 
 app.get("/healthz", async (_: Request, res: Response) => {
   const testUser = await db.select().from(testUsersTable);
