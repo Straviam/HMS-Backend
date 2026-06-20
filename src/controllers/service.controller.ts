@@ -109,7 +109,7 @@ export const createService = async (
   }
 };
 
-export const getServicesByType = async (
+export const getServicesByServiceType = async (
   req: Request,
   res: Response,
   next: NextFunction,
