@@ -87,7 +87,7 @@ export const updateRoom = async (
 ) => {
   try {
     const id = req.params.id as string;
-    const { status, price } = req.body;
+    const { status, price, isActive } = req.body;
 
     if (!id) {
       throw new ApiError(400, "BAD_REQUEST", "Room ID is required.");
@@ -98,12 +98,13 @@ export const updateRoom = async (
       .set({
         ...(status && { status }),
         ...(price && { pricePerHour: price.toString() }),
+        ...(isActive !== undefined && { isActive }),
       })
-      .where(and(eq(rooms.id, id), eq(rooms.isActive, true)))
+      .where(eq(rooms.id, id))
       .returning();
 
     if (!updatedRoom) {
-      throw new ApiError(404, "NOT_FOUND", "Active room not found.");
+      throw new ApiError(404, "NOT_FOUND", "Room not found.");
     }
 
     return res.status(200).json(
