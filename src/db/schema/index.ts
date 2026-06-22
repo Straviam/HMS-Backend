@@ -1,4 +1,4 @@
-import { doctors, doctorTimings, services } from "./doctor-and-service.js";
+import { doctors, doctorTimings, services, serviceTypes } from "./doctor-and-service.js";
 import { relations } from "drizzle-orm";
 import {
   doctorTransactions,
@@ -127,7 +127,15 @@ export const roomRelations = relations(rooms, ({ many }) => ({
   transactions: many(roomTransactions),
 }));
 
-export const serviceRelations = relations(services, ({ many }) => ({
+export const serviceTypeRelations = relations(serviceTypes, ({ many }) => ({
+  services: many(services),
+}));
+
+export const serviceRelations = relations(services, ({ one, many }) => ({
+  serviceType: one(serviceTypes, {
+    fields: [services.serviceTypeId],
+    references: [serviceTypes.id],
+  }),
   transactions: many(serviceTransactions),
 }));
 

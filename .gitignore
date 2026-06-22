@@ -38,3 +38,4 @@ yazi
 # -- BUILD Files
 dist/
 notes.md
+HMS_DB.session.sql
