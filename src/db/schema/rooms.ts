@@ -4,6 +4,7 @@ import {
   pgTable,
   timestamp,
   uuid,
+  boolean,
   varchar,
 } from "drizzle-orm/pg-core";
 import { roomTransactions } from "./transactions.js";
@@ -23,6 +24,7 @@ export const rooms = pgTable("rooms", {
   pricePerHour: decimal("price_per_day", { precision: 10, scale: 2 }).notNull(),
   status: roomStatusEnum("status").default("AVAILABLE").notNull(),
   lastCleanedAt: timestamp("last_cleaned_at"),
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
