@@ -39,3 +39,4 @@ yazi
 dist/
 notes.md
 HMS_DB.session.sql
+HMS-SupaBaseDB.session.sql
