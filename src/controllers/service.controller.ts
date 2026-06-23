@@ -18,7 +18,7 @@ export const createServiceType = async (
   next: NextFunction,
 ) => {
   try {
-    const { name, isQueuingEnabled, doctorInvolvement, description } = req.body;
+    const { name, isQueuingEnabled, doctorInvolvement, description, iconKey } = req.body;
 
     if (!name) {
       throw new ApiError(400, "BAD_REQUEST", "Service type name is required.");
@@ -31,6 +31,7 @@ export const createServiceType = async (
         isQueuingEnabled: isQueuingEnabled ?? false,
         doctorInvolvement: doctorInvolvement ?? "NO",
         description,
+        iconKey,
       })
       .returning();
 
@@ -65,7 +66,7 @@ export const createService = async (
   next: NextFunction,
 ) => {
   try {
-    const { serviceTypeId, serviceName, basePrice } = req.body;
+    const { serviceTypeId, serviceName, basePrice, systemCode } = req.body;
 
     if (!serviceTypeId || !serviceName || !basePrice) {
       throw new ApiError(
@@ -81,6 +82,7 @@ export const createService = async (
         serviceTypeId,
         serviceName,
         basePrice: basePrice.toString(),
+        systemCode,
       })
       .returning();
 
@@ -115,7 +117,7 @@ export const getServicesByServiceType = async (
   next: NextFunction,
 ) => {
   try {
-    const serviceTypeId  = req.params.serviceTypeId as string;
+    const serviceTypeId = req.params.serviceTypeId as string;
 
     if (!serviceTypeId) {
       throw new ApiError(400, "BAD_REQUEST", "Service Type ID is required.");
@@ -152,8 +154,8 @@ export const getAllServiceTypes = async (
 
     return res.status(200).json(
       new ApiResponse<ServiceType[]>(
-        200, 
-        allTypes, 
+        200,
+        allTypes,
         "Service categories fetched successfully"
       )
     );
@@ -169,7 +171,7 @@ export const updateServiceType = async (
 ) => {
   try {
     const id = req.params.id as string;
-    const { name, isQueuingEnabled, doctorInvolvement, description } = req.body;
+    const { name, isQueuingEnabled, doctorInvolvement, description, iconKey } = req.body;
 
     if (!id) {
       throw new ApiError(400, "BAD_REQUEST", "Service Type ID is required.");
@@ -178,10 +180,11 @@ export const updateServiceType = async (
     const [updatedType] = await db
       .update(serviceTypes)
       .set({
-        ...(name && { name: name}),
+        ...(name && { name: name }),
         ...(isQueuingEnabled !== undefined && { isQueuingEnabled }),
         ...(doctorInvolvement && { doctorInvolvement }),
         ...(description !== undefined && { description }),
+        ...(iconKey !== undefined && { iconKey }),
       })
       .where(eq(serviceTypes.id, id))
       .returning();
@@ -211,7 +214,7 @@ export const updateService = async (
 ) => {
   try {
     const id = req.params.id as string;
-    const { serviceTypeId, serviceName, basePrice } = req.body;
+    const { serviceTypeId, serviceName, basePrice, isActive, systemCode } = req.body;
 
     if (!id) {
       throw new ApiError(400, "BAD_REQUEST", "Service ID is required.");
@@ -223,6 +226,8 @@ export const updateService = async (
         ...(serviceTypeId && { serviceTypeId }),
         ...(serviceName && { serviceName }),
         ...(basePrice && { basePrice: basePrice.toString() }),
+        ...(isActive !== undefined && { isActive }),
+        ...(systemCode && { systemCode }),
       })
       .where(eq(services.id, id))
       .returning();
@@ -261,8 +266,8 @@ export const searchServices = async (
 
     const matches = await db.query.services.findMany({
       where: ilike(services.serviceName, searchTerm),
-      with: { 
-        serviceType: true 
+      with: {
+        serviceType: true
       },
       limit: 10,
     });
@@ -274,3 +279,23 @@ export const searchServices = async (
     next(error);
   }
 };
+
+export const getAllService = async (
+  _: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const allService = await db.query.services.findMany();
+
+    return res.status(200).json(
+      new ApiResponse<Service[]>(
+        200,
+        allService,
+        "Service categories fetched successfully"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+}

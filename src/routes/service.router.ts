@@ -6,7 +6,8 @@ import {
   getAllServiceTypes,
   updateServiceType,
   updateService,
-  searchServices
+  searchServices,
+  getAllService
 } from "../controllers/service.controller.js";
 import verifyJwt from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role-handler.middleware.js";
@@ -57,4 +58,9 @@ serviceRouter.patch(
   updateService
 );
 
+serviceRouter.get(
+  "/",
+  authorizeRoles(["ADMIN", "MANAGEMENT", "RECEPTIONIST"]),
+  getAllService
+);
 export default serviceRouter;
