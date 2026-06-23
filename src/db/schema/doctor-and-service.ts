@@ -57,10 +57,10 @@ export const serviceTypes = pgTable("service_types", {
   doctorInvolvement: doctorInvolvementEnum("doctor_involvement")
     .default("NO")
     .notNull(),
+  iconKey: varchar("icon_key", { length: 100 }),
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-// TODO: For service Type try adding icon attribute as well
 
 export const services = pgTable("services", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -68,6 +68,8 @@ export const services = pgTable("services", {
     .references(() => serviceTypes.id)
     .notNull(),
   serviceName: varchar("service_name", { length: 255 }).notNull(), // e.g., "Chest X-Ray", "Blood Sugar"
+  systemCode: varchar("system_code", { length: 100 }),
+  isActive: boolean("is_active").default(true),
   basePrice: decimal("base_price", { precision: 10, scale: 2 }).notNull(),
 });
 

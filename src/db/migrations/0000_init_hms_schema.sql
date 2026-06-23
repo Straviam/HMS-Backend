@@ -29,6 +29,7 @@ CREATE TABLE "service_types" (
 	"name" varchar(100) NOT NULL,
 	"is_queuing_enabled" boolean DEFAULT false NOT NULL,
 	"doctor_involvement" "doctor_involvement" DEFAULT 'NO' NOT NULL,
+	"icon_key" varchar(100),
 	"description" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "service_types_name_unique" UNIQUE("name")
@@ -38,6 +39,8 @@ CREATE TABLE "services" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"service_type_id" uuid NOT NULL,
 	"service_name" varchar(255) NOT NULL,
+	"system_code" varchar(100),
+	"is_active" boolean DEFAULT true,
 	"base_price" numeric(10, 2) NOT NULL
 );
 --> statement-breakpoint
@@ -98,7 +101,6 @@ CREATE TABLE "payments" (
 --> statement-breakpoint
 CREATE TABLE "room_booking" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"transaction_id" uuid NOT NULL,
 	"room_id" uuid NOT NULL,
 	"patient_id" uuid NOT NULL,
 	"check_in" timestamp DEFAULT now() NOT NULL,
@@ -137,6 +139,7 @@ CREATE TABLE "transactions" (
 	"txn_no" varchar(50) NOT NULL,
 	"patient_id" uuid NOT NULL,
 	"user_id" uuid NOT NULL,
+	"invoice_id" uuid NOT NULL,
 	"type" "txn_type" NOT NULL,
 	"amount" numeric(12, 2) NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -147,7 +150,6 @@ ALTER TABLE "doctor_timings" ADD CONSTRAINT "doctor_timings_doctor_id_doctors_id
 ALTER TABLE "services" ADD CONSTRAINT "services_service_type_id_service_types_id_fk" FOREIGN KEY ("service_type_id") REFERENCES "public"."service_types"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "invoices" ADD CONSTRAINT "invoices_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "payments" ADD CONSTRAINT "payments_invoice_id_invoices_id_fk" FOREIGN KEY ("invoice_id") REFERENCES "public"."invoices"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "room_booking" ADD CONSTRAINT "room_booking_transaction_id_room_transactions_transaction_id_fk" FOREIGN KEY ("transaction_id") REFERENCES "public"."room_transactions"("transaction_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "room_booking" ADD CONSTRAINT "room_booking_room_id_rooms_id_fk" FOREIGN KEY ("room_id") REFERENCES "public"."rooms"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "room_booking" ADD CONSTRAINT "room_booking_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "doctor_transactions" ADD CONSTRAINT "doctor_transactions_transaction_id_transactions_id_fk" FOREIGN KEY ("transaction_id") REFERENCES "public"."transactions"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -157,4 +159,5 @@ ALTER TABLE "room_transactions" ADD CONSTRAINT "room_transactions_room_id_rooms_
 ALTER TABLE "service_transactions" ADD CONSTRAINT "service_transactions_transaction_id_transactions_id_fk" FOREIGN KEY ("transaction_id") REFERENCES "public"."transactions"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "service_transactions" ADD CONSTRAINT "service_transactions_service_id_services_id_fk" FOREIGN KEY ("service_id") REFERENCES "public"."services"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "transactions" ADD CONSTRAINT "transactions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_invoice_id_invoices_id_fk" FOREIGN KEY ("invoice_id") REFERENCES "public"."invoices"("id") ON DELETE no action ON UPDATE no action;

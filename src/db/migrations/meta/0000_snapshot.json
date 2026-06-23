@@ -1,5 +1,5 @@
 {
-  "id": "1faca18f-db67-4b1d-9ea0-8f2b135ec961",
+  "id": "02119157-0841-416a-8e4c-431138207748",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -74,8 +74,12 @@
           "name": "doctor_timings_doctor_id_doctors_id_fk",
           "tableFrom": "doctor_timings",
           "tableTo": "doctors",
-          "columnsFrom": ["doctor_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "doctor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -157,6 +161,12 @@
           "notNull": true,
           "default": "'NO'"
         },
+        "icon_key": {
+          "name": "icon_key",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "description": {
           "name": "description",
           "type": "text",
@@ -178,7 +188,9 @@
         "service_types_name_unique": {
           "name": "service_types_name_unique",
           "nullsNotDistinct": false,
-          "columns": ["name"]
+          "columns": [
+            "name"
+          ]
         }
       },
       "policies": {},
@@ -208,6 +220,19 @@
           "primaryKey": false,
           "notNull": true
         },
+        "system_code": {
+          "name": "system_code",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
         "base_price": {
           "name": "base_price",
           "type": "numeric(10, 2)",
@@ -221,8 +246,12 @@
           "name": "services_service_type_id_service_types_id_fk",
           "tableFrom": "services",
           "tableTo": "service_types",
-          "columnsFrom": ["service_type_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "service_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -280,7 +309,9 @@
         "test_users_email_unique": {
           "name": "test_users_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
@@ -368,12 +399,16 @@
         "patients_mr_number_unique": {
           "name": "patients_mr_number_unique",
           "nullsNotDistinct": false,
-          "columns": ["mr_number"]
+          "columns": [
+            "mr_number"
+          ]
         },
         "patients_cnic_unique": {
           "name": "patients_cnic_unique",
           "nullsNotDistinct": false,
-          "columns": ["cnic"]
+          "columns": [
+            "cnic"
+          ]
         }
       },
       "policies": {},
@@ -431,7 +466,9 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
@@ -503,8 +540,12 @@
           "name": "invoices_patient_id_patients_id_fk",
           "tableFrom": "invoices",
           "tableTo": "patients",
-          "columnsFrom": ["patient_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -514,7 +555,9 @@
         "invoices_invoice_no_unique": {
           "name": "invoices_invoice_no_unique",
           "nullsNotDistinct": false,
-          "columns": ["invoice_no"]
+          "columns": [
+            "invoice_no"
+          ]
         }
       },
       "policies": {},
@@ -570,8 +613,12 @@
           "name": "payments_invoice_id_invoices_id_fk",
           "tableFrom": "payments",
           "tableTo": "invoices",
-          "columnsFrom": ["invoice_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "invoice_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -592,12 +639,6 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
-        },
-        "transaction_id": {
-          "name": "transaction_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
         },
         "room_id": {
           "name": "room_id",
@@ -634,21 +675,16 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "room_booking_transaction_id_room_transactions_transaction_id_fk": {
-          "name": "room_booking_transaction_id_room_transactions_transaction_id_fk",
-          "tableFrom": "room_booking",
-          "tableTo": "room_transactions",
-          "columnsFrom": ["transaction_id"],
-          "columnsTo": ["transaction_id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "room_booking_room_id_rooms_id_fk": {
           "name": "room_booking_room_id_rooms_id_fk",
           "tableFrom": "room_booking",
           "tableTo": "rooms",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -656,8 +692,12 @@
           "name": "room_booking_patient_id_patients_id_fk",
           "tableFrom": "room_booking",
           "tableTo": "patients",
-          "columnsFrom": ["patient_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -726,7 +766,9 @@
         "rooms_room_number_unique": {
           "name": "rooms_room_number_unique",
           "nullsNotDistinct": false,
-          "columns": ["room_number"]
+          "columns": [
+            "room_number"
+          ]
         }
       },
       "policies": {},
@@ -756,8 +798,12 @@
           "name": "doctor_transactions_transaction_id_transactions_id_fk",
           "tableFrom": "doctor_transactions",
           "tableTo": "transactions",
-          "columnsFrom": ["transaction_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -765,8 +811,12 @@
           "name": "doctor_transactions_doctor_id_doctors_id_fk",
           "tableFrom": "doctor_transactions",
           "tableTo": "doctors",
-          "columnsFrom": ["doctor_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "doctor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -800,8 +850,12 @@
           "name": "room_transactions_transaction_id_transactions_id_fk",
           "tableFrom": "room_transactions",
           "tableTo": "transactions",
-          "columnsFrom": ["transaction_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -809,8 +863,12 @@
           "name": "room_transactions_room_id_rooms_id_fk",
           "tableFrom": "room_transactions",
           "tableTo": "rooms",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -844,8 +902,12 @@
           "name": "service_transactions_transaction_id_transactions_id_fk",
           "tableFrom": "service_transactions",
           "tableTo": "transactions",
-          "columnsFrom": ["transaction_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -853,8 +915,12 @@
           "name": "service_transactions_service_id_services_id_fk",
           "tableFrom": "service_transactions",
           "tableTo": "services",
-          "columnsFrom": ["service_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "service_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -894,6 +960,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "invoice_id": {
+          "name": "invoice_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "type": {
           "name": "type",
           "type": "txn_type",
@@ -921,8 +993,12 @@
           "name": "transactions_patient_id_patients_id_fk",
           "tableFrom": "transactions",
           "tableTo": "patients",
-          "columnsFrom": ["patient_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -930,8 +1006,25 @@
           "name": "transactions_user_id_users_id_fk",
           "tableFrom": "transactions",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transactions_invoice_id_invoices_id_fk": {
+          "name": "transactions_invoice_id_invoices_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "invoices",
+          "columnsFrom": [
+            "invoice_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -941,7 +1034,9 @@
         "transactions_txn_no_unique": {
           "name": "transactions_txn_no_unique",
           "nullsNotDistinct": false,
-          "columns": ["txn_no"]
+          "columns": [
+            "txn_no"
+          ]
         }
       },
       "policies": {},
@@ -966,12 +1061,20 @@
     "public.doctor_involvement": {
       "name": "doctor_involvement",
       "schema": "public",
-      "values": ["YES", "NO", "PARTIAL"]
+      "values": [
+        "YES",
+        "NO",
+        "PARTIAL"
+      ]
     },
     "public.gender": {
       "name": "gender",
       "schema": "public",
-      "values": ["MALE", "FEMALE", "OTHER"]
+      "values": [
+        "MALE",
+        "FEMALE",
+        "OTHER"
+      ]
     },
     "public.user_role": {
       "name": "user_role",
@@ -988,17 +1091,29 @@
     "public.payment_status_enum": {
       "name": "payment_status_enum",
       "schema": "public",
-      "values": ["PENDING", "DONE"]
+      "values": [
+        "PENDING",
+        "DONE"
+      ]
     },
     "public.room_status": {
       "name": "room_status",
       "schema": "public",
-      "values": ["AVAILABLE", "OCCUPIED", "UNDER_MAINTENANCE", "CLEANING"]
+      "values": [
+        "AVAILABLE",
+        "OCCUPIED",
+        "UNDER_MAINTENANCE",
+        "CLEANING"
+      ]
     },
     "public.txn_type": {
       "name": "txn_type",
       "schema": "public",
-      "values": ["SERVICE", "DOCTOR", "ROOM"]
+      "values": [
+        "SERVICE",
+        "DOCTOR",
+        "ROOM"
+      ]
     }
   },
   "schemas": {},
