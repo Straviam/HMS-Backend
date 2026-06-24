@@ -3,7 +3,7 @@ import { db } from "../db/db.js";
 import { rooms } from "../db/schema/index.js";
 import ApiError from "../utils/api-error.js";
 import ApiResponse from "../utils/api-response.js";
-import { eq, and } from "drizzle-orm";
+import { eq, and, count } from "drizzle-orm";
 
 type Room = typeof rooms.$inferSelect;
 
@@ -154,6 +154,44 @@ export const decommissionRoom = async (
     if ((error as any).code === "22P02") {
       return next(new ApiError(400, "BAD_REQUEST", "Invalid Room ID format."));
     }
+    next(error);
+  }
+};
+
+export const getRoomStats = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const rawStats = await db
+      .select({
+        status: rooms.status,
+        count: count(),
+      })
+      .from(rooms)
+      .groupBy(rooms.status);
+
+    const stats = {
+      total: 0,
+      occupied: 0,
+      maintenance: 0,
+      cleaning: 0,
+      available: 0,
+    };
+
+    rawStats.forEach((row) => {
+      // Drizzle returns counts as strings, so i am  casting it to Number
+      const val = Number(row.count);
+
+      stats.total += val;
+      console.log(row)
+
+      const status = row.status?.toUpperCase();
+      if (status === "OCCUPIED") stats.occupied += val;
+      else if (status === "UNDER_MAINTENANCE") stats.maintenance += val;
+      else if (status === "CLEANING") stats.cleaning += val;
+      else if (status === "AVAILABLE") stats.available += val;
+    });
+
+    return res.status(200).json(new ApiResponse(200, stats, "Room stats fetched"));
+  } catch (error) {
     next(error);
   }
 };

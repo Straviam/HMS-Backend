@@ -4,7 +4,8 @@ import {
   getActiveRooms,
   getAllRooms,
   updateRoom,
-  decommissionRoom
+  decommissionRoom,
+  getRoomStats
 } from "../controllers/room.controller.js";
 import verifyJwt from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role-handler.middleware.js";
@@ -42,5 +43,12 @@ roomRouter.delete(
   authorizeRoles(["ADMIN", "MANAGEMENT"]),
   decommissionRoom
 );
+
+roomRouter.get(
+  "/stats",
+  authorizeRoles(["ADMIN", "MANAGEMENT"]),
+  getRoomStats
+)
+
 
 export default roomRouter;
