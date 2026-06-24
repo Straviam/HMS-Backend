@@ -21,7 +21,7 @@ export const rooms = pgTable("rooms", {
   id: uuid("id").primaryKey().defaultRandom(),
   roomNumber: varchar("room_number", { length: 20 }).unique().notNull(),
   roomType: varchar("room_type", { length: 50 }).notNull(),
-  pricePerHour: decimal("price_per_day", { precision: 10, scale: 2 }).notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),  // just price no need to hardcode in db like price per hour or day
   status: roomStatusEnum("status").default("AVAILABLE").notNull(),
   lastCleanedAt: timestamp("last_cleaned_at"),
   isActive: boolean("is_active").default(true),

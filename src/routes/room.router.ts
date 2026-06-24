@@ -1,4 +1,4 @@
-        import { Router } from "express";
+import { Router } from "express";
 import {
   addRoom,
   getActiveRooms,
@@ -20,7 +20,7 @@ roomRouter.get(
 );
 
 roomRouter.get(
-  "/all",
+  "/",
   authorizeRoles(["ADMIN", "MANAGEMENT"]),
   getAllRooms
 );

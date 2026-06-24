@@ -24,7 +24,7 @@ export const addRoom = async (
       .values({
         roomNumber: roomNumber.toUpperCase(),
         roomType,
-        pricePerHour: price.toString(),
+        price: price.toString(),
       })
       .returning();
 
@@ -93,11 +93,12 @@ export const updateRoom = async (
       throw new ApiError(400, "BAD_REQUEST", "Room ID is required.");
     }
 
+    // TODO: first check wheather the Id exits in db or not
     const [updatedRoom] = await db
       .update(rooms)
       .set({
         ...(status && { status }),
-        ...(price && { pricePerHour: price.toString() }),
+        ...(price && { price: price.toString() }),
         ...(isActive !== undefined && { isActive }),
       })
       .where(eq(rooms.id, id))
@@ -156,3 +157,5 @@ export const decommissionRoom = async (
     next(error);
   }
 };
+
+// TODO: stats Contoller and bulk price updator and percentange updator

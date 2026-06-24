@@ -1,5 +1,5 @@
 {
-  "id": "2887c9ed-1568-41fe-af4f-161c94ebb72c",
+  "id": "82eb743f-9b60-4df4-91bd-c6f919f62d39",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -731,8 +731,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "price_per_day": {
-          "name": "price_per_day",
+        "price": {
+          "name": "price",
           "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": true
