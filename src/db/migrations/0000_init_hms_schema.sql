@@ -115,6 +115,7 @@ CREATE TABLE "rooms" (
 	"price_per_day" numeric(10, 2) NOT NULL,
 	"status" "room_status" DEFAULT 'AVAILABLE' NOT NULL,
 	"last_cleaned_at" timestamp,
+	"is_active" boolean DEFAULT true,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "rooms_room_number_unique" UNIQUE("room_number")
 );
