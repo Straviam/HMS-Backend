@@ -3,7 +3,7 @@ import { db } from "../db/db.js";
 import { rooms } from "../db/schema/index.js";
 import ApiError from "../utils/api-error.js";
 import ApiResponse from "../utils/api-response.js";
-import { eq, and, count } from "drizzle-orm";
+import { eq, and, count, sql } from "drizzle-orm";
 
 type Room = typeof rooms.$inferSelect;
 
@@ -195,5 +195,27 @@ export const getRoomStats = async (req: Request, res: Response, next: NextFuncti
     next(error);
   }
 };
+
+export const applyGlobalMultiplier = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { multiplier } = req.body;
+
+    if (!multiplier || isNaN(Number(multiplier))) {
+      throw new ApiError(400, "BAD_REQUEST", "A valid numeric multiplier is required.");
+    }
+
+    await db
+      .update(rooms)
+      .set({
+        // This generates: UPDATE rooms SET rate = rate * 1.10
+        price: sql`${rooms.price} * ${Number(multiplier)}`
+      });
+
+    return res.status(200).json(new ApiResponse(200, null, `Global pricing updated by a factor of ${multiplier}`));
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 // TODO: stats Contoller and bulk price updator and percentange updator

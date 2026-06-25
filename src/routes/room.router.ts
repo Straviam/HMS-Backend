@@ -5,7 +5,8 @@ import {
   getAllRooms,
   updateRoom,
   decommissionRoom,
-  getRoomStats
+  getRoomStats,
+  applyGlobalMultiplier
 } from "../controllers/room.controller.js";
 import verifyJwt from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role-handler.middleware.js";
@@ -49,6 +50,12 @@ roomRouter.get(
   authorizeRoles(["ADMIN", "MANAGEMENT"]),
   getRoomStats
 )
+
+roomRouter.patch(
+  "/pricing/bulk-multiplier",
+  authorizeRoles(["ADMIN", "MANAGMENT"]),
+  applyGlobalMultiplier
+);
 
 
 export default roomRouter;
