@@ -174,7 +174,7 @@ export const getAllDoctorsWithTimings = async (
       with: { timings: true },
     })) as DoctorWithTimings[];
 
-    if (!allDoctors || allDoctors.length === 0) {
+    if (!allDoctors) { // NOTE: if no dr found then we actuallay want to show empty array not 404
       throw new ApiError(404, "NOT_FOUND", "No doctors found in the database.");
     }
 
