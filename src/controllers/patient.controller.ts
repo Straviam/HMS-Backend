@@ -345,7 +345,7 @@ export const getPatientTimeline = async (
       db.query.invoices.findMany({
         where: and(
           eq(invoices.patientId, patientId as string),
-          eq(invoices.status, "DONE"),
+          eq(invoices.status, "PAID"),
         ),
         orderBy: [desc(invoices.createdAt)],
       }),
@@ -448,6 +448,45 @@ export const getPatientTimeline = async (
     return res
       .status(200)
       .json(new ApiResponse<typeof payload>(200, payload, "Timeline fetched"));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const searchPatientsForReception = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const q = req.query.q as string;
+
+    if (!q || q.trim() === "") {
+      return res.status(200).json(new ApiResponse(200, [], "Empty search query"));
+    }
+
+    const searchPattern = `%${q.trim()}%`;
+
+    const matches = await db.query.patients.findMany({
+      where: or(
+        ilike(patients.mrNumber, searchPattern),
+        ilike(patients.phone, searchPattern),
+        ilike(patients.cnic, searchPattern)
+      ),
+      limit: 10, 
+      columns: {
+        id: true,
+        mrNumber: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        cnic: true
+      }
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, matches, "Patients found")
+    );
   } catch (error) {
     next(error);
   }
