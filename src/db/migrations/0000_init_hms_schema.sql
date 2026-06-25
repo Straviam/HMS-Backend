@@ -112,7 +112,7 @@ CREATE TABLE "rooms" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"room_number" varchar(20) NOT NULL,
 	"room_type" varchar(50) NOT NULL,
-	"price_per_day" numeric(10, 2) NOT NULL,
+	"price" numeric(10, 2) NOT NULL,
 	"status" "room_status" DEFAULT 'AVAILABLE' NOT NULL,
 	"last_cleaned_at" timestamp,
 	"is_active" boolean DEFAULT true,

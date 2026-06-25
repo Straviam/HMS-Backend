@@ -1,10 +1,13 @@
-        import { Router } from "express";
+import { Router } from "express";
 import {
   addRoom,
   getActiveRooms,
   getAllRooms,
   updateRoom,
-  decommissionRoom
+  decommissionRoom,
+  getRoomStats,
+  applyGlobalMultiplier,
+  bulkUpdateRoomRates
 } from "../controllers/room.controller.js";
 import verifyJwt from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role-handler.middleware.js";
@@ -20,7 +23,7 @@ roomRouter.get(
 );
 
 roomRouter.get(
-  "/all",
+  "/",
   authorizeRoles(["ADMIN", "MANAGEMENT"]),
   getAllRooms
 );
@@ -41,6 +44,24 @@ roomRouter.delete(
   "/:id",
   authorizeRoles(["ADMIN", "MANAGEMENT"]),
   decommissionRoom
+);
+
+roomRouter.get(
+  "/stats",
+  authorizeRoles(["ADMIN", "MANAGEMENT"]),
+  getRoomStats
+)
+
+roomRouter.patch(
+  "/pricing/bulk-multiplier",
+  authorizeRoles(["ADMIN", "MANAGMENT"]),
+  applyGlobalMultiplier
+);
+
+roomRouter.put(
+  "/pricing/bulk-override",
+  authorizeRoles(["ADMIN", "MANAGMENT"]),
+  bulkUpdateRoomRates
 );
 
 export default roomRouter;
