@@ -217,5 +217,33 @@ export const applyGlobalMultiplier = async (req: Request, res: Response, next: N
   }
 };
 
+export const bulkUpdateRoomRates = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { updates } = req.body;
 
-// TODO: stats Contoller and bulk price updator and percentange updator
+    if (!Array.isArray(updates) || updates.length === 0) {
+      throw new ApiError(400, "BAD_REQUEST", "Updates array is required.");
+    }
+
+    await db.transaction(async (tx) => {
+      // We map over the array and create an array of database promises
+      const updatePromises = updates.map((room) => {
+        if (!room.id || room.newPrice === undefined) {
+          throw new ApiError(400, "BAD_REQUEST", "Each update must contain an id and newRate.");
+        }
+
+        return tx
+          .update(rooms)
+          .set({ price: room.newPrice })
+          .where(eq(rooms.id, room.id));
+      });
+
+      // Execute all promises concurrently inside the transaction
+      await Promise.all(updatePromises);
+    });
+
+    return res.status(200).json(new ApiResponse(200, null, `Successfully updated ${updates.length} rooms.`));
+  } catch (error) {
+    next(error);
+  }
+};
