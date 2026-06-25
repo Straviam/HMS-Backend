@@ -228,16 +228,15 @@ export const bulkUpdateRoomRates = async (req: Request, res: Response, next: Nex
     await db.transaction(async (tx) => {
       // We map over the array and create an array of database promises
       const updatePromises = updates.map((room) => {
-        if (!room.id || room.newPrice === undefined) {
-          throw new ApiError(400, "BAD_REQUEST", "Each update must contain an id and newRate.");
+        if (room.id && room.newPrice) {
+
+          return tx
+            .update(rooms)
+            .set({ price: room.newPrice })
+            .where(eq(rooms.id, room.id));
+
         }
-
-        return tx
-          .update(rooms)
-          .set({ price: room.newPrice })
-          .where(eq(rooms.id, room.id));
       });
-
       // Execute all promises concurrently inside the transaction
       await Promise.all(updatePromises);
     });
