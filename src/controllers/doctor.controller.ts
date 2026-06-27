@@ -291,12 +291,14 @@ export const getAvailableDoctors = async (
     const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
     const todayEnum = days[new Date().getDay()] as "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY";
 
+    const filters = [eq(doctors.isAvailable, true)];
+
+    if (specialization && specialization.trim() !== "") {
+      filters.push(ilike(doctors.specialization, `%${specialization.trim()}%`));
+    }
+
     const availableDoctors = await db.query.doctors.findMany({
-      where: and(
-        // if specialization defined we fiiter otherwise safely ignores 
-        specialization ? ilike(doctors.specialization, specialization) : undefined,
-        eq(doctors.isAvailable, true)
-      ),
+      where: and(...filters),
       with: {
         timings: {
           where: and(
