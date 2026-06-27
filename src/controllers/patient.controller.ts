@@ -453,41 +453,46 @@ export const getPatientTimeline = async (
   }
 };
 
-export const searchPatientsForReception = async (
+export const updatePatient = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const q = req.query.q as string;
+    const id = req.params.id as string;
+    const { firstName, lastName, cnic, phone, address, bloodGroup } = req.body;
 
-    if (!q || q.trim() === "") {
-      return res.status(200).json(new ApiResponse(200, [], "Empty search query"));
+    if (!id) {
+      throw new ApiError(400, "BAD_REQUEST", "Patient ID is required.");
     }
 
-    const searchPattern = `%${q.trim()}%`;
+    const [updatedPatient] = await db
+      .update(patients)
+      .set({
+        ...(firstName && { firstName }),
+        ...(lastName && { lastName }),
+        ...(cnic && { cnic }),
+        ...(phone && { phone }),
+        ...(address && { address }),
+        ...(bloodGroup && { bloodGroup }),
+      })
+      .where(eq(patients.id, id))
+      .returning();
 
-    const matches = await db.query.patients.findMany({
-      where: or(
-        ilike(patients.mrNumber, searchPattern),
-        ilike(patients.phone, searchPattern),
-        ilike(patients.cnic, searchPattern)
-      ),
-      limit: 10, 
-      columns: {
-        id: true,
-        mrNumber: true,
-        firstName: true,
-        lastName: true,
-        phone: true,
-        cnic: true
-      }
-    });
+    if (!updatedPatient) {
+      throw new ApiError(404, "NOT_FOUND", "Patient not found.");
+    }
 
     return res.status(200).json(
-      new ApiResponse(200, matches, "Patients found")
+      new ApiResponse<Patient>(200, updatedPatient, "Patient updated successfully")
     );
   } catch (error) {
+    if ((error as any).code === "22P02") {
+      return next(new ApiError(400, "BAD_REQUEST", "Invalid Patient ID format."));
+    }
+    if ((error as any).code === "23505") {
+      return next(new ApiError(409, "CONFLICT", "A patient with this CNIC already exists."));
+    }
     next(error);
   }
 };
