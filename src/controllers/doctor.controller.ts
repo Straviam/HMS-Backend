@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { db } from "../db/db.js";
 import { doctors, doctorTimings, type dayEnum } from "../db/schema/index.js";
-import { eq, count, and, lte, gte, sql } from "drizzle-orm";
+import { eq, count, and, lte, gte, sql, ilike } from "drizzle-orm";
 import ApiError from "../utils/api-error.js";
 import ApiResponse from "../utils/api-response.js";
 
@@ -278,3 +278,41 @@ export const getDoctorStats = async (
 };
 
 // TODO: we can make a simple async handler to keep away from try catch error again and agian
+
+export const getAvailableDoctors = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    // for service type consultation 
+    const specialization = req.query.specialization as string | undefined;
+
+    const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+    const todayEnum = days[new Date().getDay()] as "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY";
+
+    const availableDoctors = await db.query.doctors.findMany({
+      where: and(
+        // if specialization defined we fiiter otherwise safely ignores 
+        specialization ? ilike(doctors.specialization, specialization) : undefined,
+        eq(doctors.isAvailable, true)
+      ),
+      with: {
+        timings: {
+          where: and(
+            eq(doctorTimings.day, todayEnum),
+            eq(doctorTimings.isActive, true)
+          )
+        }
+      }
+    });
+
+    const filteredDoctors = availableDoctors.filter(doc => doc.timings && doc.timings.length > 0);
+
+    return res.status(200).json(
+      new ApiResponse(200, filteredDoctors, "Available doctors fetched successfully")
+    );
+  } catch (error) {
+    next(error);
+  }
+};

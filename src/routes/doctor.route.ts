@@ -5,6 +5,7 @@ import {
   deleteDoctorTiming,
   getAllDoctorsWithTimings,
   getDoctorStats,
+  getAvailableDoctors
 } from "../controllers/doctor.controller.js";
 import verifyJwt from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role-handler.middleware.js";
@@ -39,5 +40,10 @@ doctorRouter.delete(
   authorizeRoles(["ADMIN"]),
   deleteDoctorTiming,
 );
+
+doctorRouter.get(
+  "/available",
+  getAvailableDoctors
+)
 
 export default doctorRouter;
