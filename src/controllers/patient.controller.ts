@@ -345,7 +345,7 @@ export const getPatientTimeline = async (
       db.query.invoices.findMany({
         where: and(
           eq(invoices.patientId, patientId as string),
-          eq(invoices.status, "DONE"),
+          eq(invoices.status, "PAID"),
         ),
         orderBy: [desc(invoices.createdAt)],
       }),
@@ -449,6 +449,50 @@ export const getPatientTimeline = async (
       .status(200)
       .json(new ApiResponse<typeof payload>(200, payload, "Timeline fetched"));
   } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePatient = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = req.params.id as string;
+    const { firstName, lastName, cnic, phone, address, bloodGroup } = req.body;
+
+    if (!id) {
+      throw new ApiError(400, "BAD_REQUEST", "Patient ID is required.");
+    }
+
+    const [updatedPatient] = await db
+      .update(patients)
+      .set({
+        ...(firstName && { firstName }),
+        ...(lastName && { lastName }),
+        ...(cnic && { cnic }),
+        ...(phone && { phone }),
+        ...(address && { address }),
+        ...(bloodGroup && { bloodGroup }),
+      })
+      .where(eq(patients.id, id))
+      .returning();
+
+    if (!updatedPatient) {
+      throw new ApiError(404, "NOT_FOUND", "Patient not found.");
+    }
+
+    return res.status(200).json(
+      new ApiResponse<Patient>(200, updatedPatient, "Patient updated successfully")
+    );
+  } catch (error) {
+    if ((error as any).code === "22P02") {
+      return next(new ApiError(400, "BAD_REQUEST", "Invalid Patient ID format."));
+    }
+    if ((error as any).code === "23505") {
+      return next(new ApiError(409, "CONFLICT", "A patient with this CNIC already exists."));
+    }
     next(error);
   }
 };

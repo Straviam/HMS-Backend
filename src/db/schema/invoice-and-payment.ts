@@ -8,14 +8,16 @@ import {
 } from "drizzle-orm/pg-core";
 import { patients } from "./patients-and-users.js";
 
-export const paymentStatusEnum = pgEnum("payment_status_enum", [
-  "PENDING",
-  "DONE",
-]);
 export const paymentMethod = pgEnum("payment_status_enum", [
   "CARD",
   "CASH",
   "BANK_TRANSFER",
+]);
+
+export const paymentStatusEnum = pgEnum("payment_status_enum", [
+  "DRAFT",  
+  "ISSUED", 
+  "PAID",   
 ]);
 
 export const invoices = pgTable("invoices", {
@@ -32,7 +34,7 @@ export const invoices = pgTable("invoices", {
     precision: 12,
     scale: 2,
   }).notNull(), // Amount after discount
-  status: paymentStatusEnum("status").default("PENDING").notNull(),
+  status: paymentStatusEnum("status").default("DRAFT").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
