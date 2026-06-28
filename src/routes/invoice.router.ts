@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
   generateReceptionReceipt,
   addItemToInvoice,
-  addPaymentToInvoice
+  addPaymentToInvoice,
+  finalizeReceptionInvoice
 } from "../controllers/invoice.controller.js";
 import verifyJwt from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role-handler.middleware.js";
@@ -17,6 +18,12 @@ invoiceRouter.post(
   generateReceptionReceipt,
 );
 
+invoiceRouter.patch(
+  "/:id/reception/finalize", 
+  authorizeRoles(["ADMIN", "RECEPTIONIST"]), 
+  finalizeReceptionInvoice,
+);
+
 invoiceRouter.post(
   "/:id/addItem",
   authorizeRoles(["ADMIN","RECEPTIONIST"]),
@@ -28,5 +35,6 @@ invoiceRouter.post(
   authorizeRoles(["ADMIN","RECEPTIONIST"]), 
   addPaymentToInvoice,
 );
+
 
 export default invoiceRouter;

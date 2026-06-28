@@ -1,7 +1,7 @@
 import type { Response, NextFunction } from "express";
 import type { AuthRequest } from "../types/types.js";
 import { db } from "../db/db.js";
-import { invoices, transactions, serviceTransactions, doctorTransactions, services, doctorTimings, serviceTypes, payments } from "../db/schema/index.js";
+import { invoices, transactions, serviceTransactions, doctorTransactions, services, doctors, doctorTimings, serviceTypes, payments } from "../db/schema/index.js";
 import { eq, desc, like, sum } from "drizzle-orm";
 import ApiError from "../utils/api-error.js";
 import ApiResponse from "../utils/api-response.js";
@@ -69,7 +69,7 @@ export const generateReceptionReceipt = async (
         totalAmount: calculatedTotal.toString(),
         discount: "0.00",
         payableAmount: calculatedTotal.toString(),
-        status: "ISSUED",
+        status: "DRAFT",
       }).returning();
 
       if (!newInvoice) throw new ApiError(500, "INTERNAL_SERVER_ERROR", "Failed to create invoice.");
@@ -131,7 +131,7 @@ export const addItemToInvoice = async (
       // check for invoice status
       const [existingInvoice] = await tx.select().from(invoices).where(eq(invoices.id, invoiceId));
       if (!existingInvoice) throw new ApiError(404, "NOT_FOUND", "Invoice not found.");
-      if (existingInvoice.status === "PAID") throw new ApiError(400, "BAD_REQUEST", "Cannot add items to a completed invoice.");
+      if (existingInvoice.status !== "DRAFT") throw new ApiError(400, "BAD_REQUEST", "Items can only be added to a DRAFT invoice.");
 
       let newItemTotal = 0;
       const processedItems: any[] = [];
@@ -282,4 +282,91 @@ export const addPaymentToInvoice = async (
 
     return res.status(200).json(new ApiResponse(200, result, "Payment processed"));
   } catch (error) { next(error); }
+};
+
+export const finalizeReceptionInvoice = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const invoiceId = req.params.id as string;
+    const userId = req.user?.id;
+
+    if (!userId) throw new ApiError(401, "UNAUTHORIZED", "User is not authenticated.");
+    if (!invoiceId) throw new ApiError(400, "BAD_REQUEST", "Invoice ID is required.");
+
+    const result = await db.transaction(async (tx) => {
+      const [invoice] = await tx.select().from(invoices).where(eq(invoices.id, invoiceId));
+
+      if (!invoice) throw new ApiError(404, "NOT_FOUND", "Invoice not found.");
+      if (invoice.status !== "DRAFT") {
+        throw new ApiError(400, "BAD_REQUEST", `Invoice cannot be finalized because it is already ${invoice.status}.`);
+      }
+
+      const [updatedInvoice] = await tx.update(invoices)
+        .set({ status: "ISSUED" })
+        .where(eq(invoices.id, invoiceId))
+        .returning();
+
+      // gettin all items
+      const rawItems = await tx.select({
+        transaction: transactions,
+        service: services,
+        serviceType: serviceTypes,
+        doctor: doctors
+      })
+      .from(transactions)
+      .leftJoin(serviceTransactions, eq(transactions.id, serviceTransactions.transactionId))
+      .leftJoin(services, eq(serviceTransactions.serviceId, services.id))
+      .leftJoin(serviceTypes, eq(services.serviceTypeId, serviceTypes.id))
+      .leftJoin(doctorTransactions, eq(transactions.id, doctorTransactions.transactionId))
+      .leftJoin(doctors, eq(doctorTransactions.doctorId, doctors.id))
+      .where(eq(transactions.invoiceId, invoiceId));
+
+      // grouping in reciept
+      const receiptsMap = new Map<string, any>();
+
+      for (const row of rawItems) {
+        // safety skip for corrupted data (as using left join)
+        if (!row.serviceType || !row.service) continue;
+
+        if (!receiptsMap.has(row.serviceType.id)) {
+          receiptsMap.set(row.serviceType.id, {
+            serviceTypeName: row.serviceType.name,
+            isQueuingEnabled: row.serviceType.isQueuingEnabled,
+            subTotal: 0,
+            items: []
+          });
+        }
+
+        const receiptGroup = receiptsMap.get(row.serviceType.id)!;
+        const itemCost = parseFloat(row.transaction.amount as string);
+
+        // formatting
+        let itemName = row.service.serviceName;
+        if (row.doctor) {
+          itemName += ` (with ${row.doctor.doctorName})`;
+        }
+
+        receiptGroup.items.push({
+          txnNo: row.transaction.txnNo,
+          type: row.transaction.type,
+          itemName: itemName,
+          price: itemCost
+        });
+
+        receiptGroup.subTotal += itemCost;
+      }
+
+      return {
+        invoice: updatedInvoice,
+        receipts: Array.from(receiptsMap.values())
+      };
+    });
+
+    return res.status(200).json(new ApiResponse(200, result, "Invoice finalized and ready for payment"));
+  } catch (error) { 
+    next(error); 
+  }
 };
