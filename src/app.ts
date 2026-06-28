@@ -13,6 +13,7 @@ import doctorRouter from "./routes/doctor.route.js";
 import patientRouter from "./routes/patient.router.js";
 import serviceRouter from "./routes/service.router.js";
 import roomRouter from "./routes/room.router.js";
+import invoiceRouter from "./routes/invoice.router.js";
 
 const corsOptions = {
   origin: ["http://localhost:5173", "*"],
@@ -32,6 +33,7 @@ app.use("/api/v1/doctors", doctorRouter);
 app.use("/api/v1/patients", patientRouter);
 app.use("/api/v1/services", serviceRouter);
 app.use("/api/v1/rooms", roomRouter);
+app.use("/api/v1/invoices", invoiceRouter);
 
 app.get("/healthz", async (_: Request, res: Response) => {
   const testUser = await db.select().from(testUsersTable);
