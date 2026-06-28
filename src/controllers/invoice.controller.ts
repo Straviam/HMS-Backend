@@ -215,3 +215,71 @@ export const addItemToInvoice = async (
     return res.status(200).json(new ApiResponse(200, result, "Items successfully appended to invoice"));
   } catch (error) { next(error); }
 };
+
+export const addPaymentToInvoice = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const invoiceId = req.params.id as string;
+    const { amountPaid, paymentMethod, referenceNo, discount } = req.body;
+
+    if (!invoiceId || !amountPaid || !paymentMethod) {
+      throw new ApiError(400, "BAD_REQUEST", "Invoice ID, amountPaid, and paymentMethod are required.");
+    }
+
+    const result = await db.transaction(async (tx) => {
+
+      const [invoice] = await tx.select().from(invoices).where(eq(invoices.id, invoiceId));
+      if (!invoice) throw new ApiError(404, "NOT_FOUND", "Invoice not found.");
+      if (invoice.status === "PAID") throw new ApiError(400, "BAD_REQUEST", "Invoice is already paid.");
+
+      let currentPayable = parseFloat(invoice.payableAmount as string);
+
+      // apply discount
+      if (discount !== undefined && parseFloat(discount) >= 0) {
+        const totalAmount = parseFloat(invoice.totalAmount as string);
+        currentPayable = totalAmount - parseFloat(discount);
+        
+        const updateDiscount = invoice.discount + discount
+
+        await tx.update(invoices).set({ 
+          discount: updateDiscount.toString(),
+          payableAmount: currentPayable.toString()
+        }).where(eq(invoices.id, invoiceId));
+      }
+
+      // payment generation
+      const [newPayment] = await tx.insert(payments).values({
+        invoiceId: invoice.id,
+        amountPaid: amountPaid.toString(),
+        paymentMethod: paymentMethod,
+        referenceNo: referenceNo || null,
+      }).returning();
+
+      // amount paid till now
+      const [paymentTotals] = await tx.select({ total: sum(payments.amountPaid) })
+        .from(payments)
+        .where(eq(payments.invoiceId, invoiceId));
+        
+      const totalPaidSoFar = parseFloat((paymentTotals?.total as string) || "0");
+
+      // status update
+      const updatedStatus = totalPaidSoFar >= currentPayable ? "PAID" : invoice.status;
+
+      if (updatedStatus === "PAID") {
+        await tx.update(invoices).set({ status: "PAID" }).where(eq(invoices.id, invoiceId));
+      }
+      
+      return {
+        payment: newPayment,
+        totalPaid: totalPaidSoFar,
+        remainingBalance: Math.max(0, currentPayable - totalPaidSoFar),
+        invoiceStatus: updatedStatus
+      };
+    });
+
+    return res.status(200).json(new ApiResponse(200, result, "Payment processed"));
+  } catch (error) { next(error); }
+};
