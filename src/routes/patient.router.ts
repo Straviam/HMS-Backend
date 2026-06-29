@@ -4,6 +4,7 @@ import {
   getPatients,
   getPatientStats,
   getPatientTimeline,
+  updatePatient,
 } from "../controllers/patient.controller.js";
 import verifyJwt from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role-handler.middleware.js";
@@ -42,5 +43,10 @@ patientRouter.get(
   getPatientTimeline,
 );
 
+patientRouter.patch(
+  "/",
+  authorizeRoles(["ADMIN", "RECEPTIONIST", "OPD_OPERATOR"]),
+  updatePatient
+)
 
 export default patientRouter;
