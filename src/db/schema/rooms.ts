@@ -9,6 +9,8 @@ import {
 } from "drizzle-orm/pg-core";
 import { roomTransactions } from "./transactions.js";
 import { patients } from "./patients-and-users.js";
+import { users } from "./patients-and-users.js"; 
+import { invoices } from "./invoice-and-payment.js";
 
 export const roomStatusEnum = pgEnum("room_status", [
   "AVAILABLE",
@@ -39,7 +41,8 @@ export const roomBooking = pgTable("room_booking", {
   patientId: uuid("patient_id")
     .references(() => patients.id)
     .notNull(),
-
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  invoiceId: uuid("invoice_id").references(() => invoices.id).notNull(),
   checkIn: timestamp("check_in").defaultNow().notNull(),
   checkOut: timestamp("check_out"), // Null until the patient is discharged
 

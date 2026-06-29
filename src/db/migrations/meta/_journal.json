@@ -15,6 +15,20 @@
       "when": 1782571383913,
       "tag": "0001_hard_skullbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782753885394,
+      "tag": "0002_short_whistler",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782754684664,
+      "tag": "0003_yummy_iron_monger",
+      "breakpoints": true
     }
   ]
 }

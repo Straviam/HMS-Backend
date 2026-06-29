@@ -223,8 +223,10 @@ export const addPaymentToInvoice = async (
 ) => {
   try {
     const invoiceId = req.params.id as string;
+    const userId = req.user?.id;
     const { amountPaid, paymentMethod, referenceNo, discount } = req.body;
 
+    if (!userId) throw new ApiError(401, "UNAUTHORIZED", "User is not authenticated.");
     if (!invoiceId || !amountPaid || !paymentMethod) {
       throw new ApiError(400, "BAD_REQUEST", "Invoice ID, amountPaid, and paymentMethod are required.");
     }
@@ -256,6 +258,7 @@ export const addPaymentToInvoice = async (
         amountPaid: amountPaid.toString(),
         paymentMethod: paymentMethod,
         referenceNo: referenceNo || null,
+        userId: userId,
       }).returning();
 
       // amount paid till now

@@ -24,43 +24,43 @@ roomRouter.get(
 
 roomRouter.get(
   "/",
-  authorizeRoles(["ADMIN", "MANAGEMENT"]),
+  authorizeRoles(["ADMIN", "MANAGEMENT", "RECEPTIONIST"]),
   getAllRooms
 );
 
 roomRouter.post(
   "/",
-  authorizeRoles(["ADMIN", "MANAGEMENT"]),
+  authorizeRoles(["ADMIN", "MANAGEMENT", "RECEPTIONIST"]),
   addRoom
 );
 
 roomRouter.patch(
   "/:id",
-  authorizeRoles(["ADMIN", "MANAGEMENT"]),
+  authorizeRoles(["ADMIN", "MANAGEMENT", "RECEPTIONIST"]),
   updateRoom
 );
 
 roomRouter.delete(
   "/:id",
-  authorizeRoles(["ADMIN", "MANAGEMENT"]),
+  authorizeRoles(["ADMIN", "MANAGEMENT", "RECEPTIONIST"]),
   decommissionRoom
 );
 
 roomRouter.get(
   "/stats",
-  authorizeRoles(["ADMIN", "MANAGEMENT"]),
+  authorizeRoles(["ADMIN", "MANAGEMENT", "RECEPTIONIST"]),
   getRoomStats
 )
 
 roomRouter.patch(
   "/pricing/bulk-multiplier",
-  authorizeRoles(["ADMIN", "MANAGMENT"]),
+  authorizeRoles(["ADMIN", "MANAGMENT", "RECEPTIONIST"]),
   applyGlobalMultiplier
 );
 
 roomRouter.put(
   "/pricing/bulk-override",
-  authorizeRoles(["ADMIN", "MANAGMENT"]),
+  authorizeRoles(["ADMIN", "MANAGMENT", "RECEPTIONIST"]),
   bulkUpdateRoomRates
 );
 
