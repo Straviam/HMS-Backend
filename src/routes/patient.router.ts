@@ -44,7 +44,7 @@ patientRouter.get(
 );
 
 patientRouter.patch(
-  "/",
+  "/:id",
   authorizeRoles(["ADMIN", "RECEPTIONIST", "OPD_OPERATOR"]),
   updatePatient
 )
