@@ -7,6 +7,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { patients } from "./patients-and-users.js";
+import { users } from "./patients-and-users.js";
 
 export const paymentMethod = pgEnum("payment_status_enum", [
   "CARD",
@@ -47,6 +48,7 @@ export const payments = pgTable("payments", {
   paymentMethod: varchar("payment_method", { length: 50 }).notNull(), // Cash, Card, Bank Transfer
   referenceNo: varchar("reference_no", { length: 100 }), // Receipt or Cheque No
   paidAt: timestamp("paid_at").defaultNow().notNull(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
 });
 
 // TODO: invoice and payement is not decided and also queue
