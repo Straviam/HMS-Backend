@@ -1,4 +1,4 @@
-import type { Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import type { AuthRequest } from "../types/types.js";
 import { db } from "../db/db.js";
 import { 
@@ -11,7 +11,8 @@ import {
   doctors, 
   rooms, 
   roomBooking,
-  roomTransactions
+  roomTransactions,
+  patients
 } from "../db/schema/index.js";
 import { eq, desc, like, and } from "drizzle-orm";
 import ApiError from "../utils/api-error.js";
@@ -261,5 +262,31 @@ export const finalizeInvoiceAndDischarge = async (
     return res.status(200).json(new ApiResponse(200, result, "Patient discharged successfully and final structured bill issued."));
   } catch (error) { 
     next(error); 
+  }
+};
+
+export const getActiveBookedRooms = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+
+    const activeRooms = await db.select({
+      booking: roomBooking,
+      room: rooms,
+      patient: patients,
+    })
+    .from(roomBooking)
+    .innerJoin(rooms, eq(roomBooking.roomId, rooms.id))
+    .innerJoin(patients, eq(roomBooking.patientId, patients.id))
+    .where(eq(roomBooking.status, "ACTIVE"))
+    .orderBy(desc(roomBooking.checkIn));
+
+    return res.status(200).json(
+      new ApiResponse(200, activeRooms, "Active booked rooms retrieved successfully")
+    );
+  } catch (error) {
+    next(error);
   }
 };
